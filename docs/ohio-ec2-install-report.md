@@ -60,7 +60,7 @@
 /mnt/openclaw/bin/start-openclaw.sh
 /mnt/openclaw/cache
 /mnt/openclaw/config
-/mnt/openclaw/config/config.yaml
+/mnt/openclaw/config/config.json5
 /mnt/openclaw/logs
 /mnt/openclaw/lost+found
 /mnt/openclaw/releases
@@ -83,3 +83,5 @@ nvme1n1       ext4   1.0   OPENCLAW_DATA 0b863c96-2fca-4365-aff8-8d3eabfa36d3   
 - The root volume only keeps low-change system and bootstrap components.
 - All OpenClaw-specific binaries, wrappers, config, state, cache, logs, and auth paths are on the data volume.
 - The installation intentionally stopped before onboarding and before starting the OpenClaw service.
+- The corrected runtime entrypoint is `openclaw gateway run --allow-unconfigured`, with `OPENCLAW_CONFIG_PATH=/mnt/openclaw/config/config.json5`.
+- Runtime state, canvas files, auth, and config are on the data volume. The OpenClaw process still reports its own rolling log file under `/tmp/openclaw/openclaw-YYYY-MM-DD.log`, which appears to be internal CLI behavior rather than the wrapper path layout.

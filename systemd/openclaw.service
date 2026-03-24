@@ -10,6 +10,7 @@ User=root
 WorkingDirectory=/mnt/openclaw
 Environment=OPENCLAW_STATE_DIR=/mnt/openclaw/state
 Environment=OPENCLAW_AUTH_DIR=/mnt/openclaw/auth
+Environment=OPENCLAW_CONFIG_PATH=/mnt/openclaw/config/config.json5
 ExecStart=/bin/bash /mnt/openclaw/bin/start-openclaw.sh
 Restart=always
 RestartSec=5

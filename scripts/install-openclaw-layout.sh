@@ -12,7 +12,8 @@ cat > /mnt/openclaw/bin/start-openclaw.sh <<'EOS'
 set -euo pipefail
 export OPENCLAW_STATE_DIR=/mnt/openclaw/state
 export OPENCLAW_AUTH_DIR=/mnt/openclaw/auth
-exec /mnt/openclaw/bin/openclaw --config /mnt/openclaw/config/config.yaml
+export OPENCLAW_CONFIG_PATH=/mnt/openclaw/config/config.json5
+exec /mnt/openclaw/bin/openclaw gateway run --allow-unconfigured
 EOS
 chmod 0755 /mnt/openclaw/bin/start-openclaw.sh
 
@@ -41,11 +42,8 @@ if ! grep -q '^LABEL=OPENCLAW_DATA /mnt/openclaw ' /etc/fstab; then
   echo 'LABEL=OPENCLAW_DATA /mnt/openclaw ext4 defaults,nofail 0 2' >> /etc/fstab
 fi
 
-if [ ! -f /mnt/openclaw/config/config.yaml ]; then
-  cat > /mnt/openclaw/config/config.yaml <<'EOS'
-# Populate this file before starting OpenClaw.
-# The install intentionally stops before onboarding/runtime startup.
-EOS
+if [ ! -f /mnt/openclaw/config/config.json5 ]; then
+  : > /mnt/openclaw/config/config.json5
 fi
 
 cat > /etc/systemd/system/openclaw.service <<'EOS'
@@ -61,6 +59,7 @@ User=root
 WorkingDirectory=/mnt/openclaw
 Environment=OPENCLAW_STATE_DIR=/mnt/openclaw/state
 Environment=OPENCLAW_AUTH_DIR=/mnt/openclaw/auth
+Environment=OPENCLAW_CONFIG_PATH=/mnt/openclaw/config/config.json5
 ExecStart=/bin/bash /mnt/openclaw/bin/start-openclaw.sh
 Restart=always
 RestartSec=5
