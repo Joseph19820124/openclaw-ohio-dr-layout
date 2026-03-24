@@ -1,0 +1,18 @@
+[Unit]
+Description=OpenClaw
+After=network-online.target mnt-openclaw.mount
+Wants=network-online.target
+RequiresMountsFor=/mnt/openclaw
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/mnt/openclaw
+Environment=OPENCLAW_STATE_DIR=/mnt/openclaw/state
+Environment=OPENCLAW_AUTH_DIR=/mnt/openclaw/auth
+ExecStart=/bin/bash /mnt/openclaw/bin/start-openclaw.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
