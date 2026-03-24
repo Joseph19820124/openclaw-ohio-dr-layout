@@ -27,8 +27,8 @@
 
 ## Current Service State
 
-- `openclaw.service`: `inactive`
-- `openclaw.service`: `disabled`
+- `openclaw.service`: `active (running)`
+- `openclaw.service`: `enabled`
 - `fstab` mount rule present for `LABEL=OPENCLAW_DATA`
 
 ## Root Volume Content
@@ -62,6 +62,7 @@
 /mnt/openclaw/config
 /mnt/openclaw/config/config.json5
 /mnt/openclaw/logs
+/mnt/openclaw/logs/runtime
 /mnt/openclaw/lost+found
 /mnt/openclaw/releases
 /mnt/openclaw/state
@@ -84,4 +85,7 @@ nvme1n1       ext4   1.0   OPENCLAW_DATA 0b863c96-2fca-4365-aff8-8d3eabfa36d3   
 - All OpenClaw-specific binaries, wrappers, config, state, cache, logs, and auth paths are on the data volume.
 - The installation intentionally stopped before onboarding and before starting the OpenClaw service.
 - The corrected runtime entrypoint is `openclaw gateway run --allow-unconfigured`, with `OPENCLAW_CONFIG_PATH=/mnt/openclaw/config/config.json5`.
-- Runtime state, canvas files, auth, and config are on the data volume. The OpenClaw process still reports its own rolling log file under `/tmp/openclaw/openclaw-YYYY-MM-DD.log`, which appears to be internal CLI behavior rather than the wrapper path layout.
+- Runtime state, canvas files, auth, and config are on the data volume.
+- `/tmp/openclaw` should be a bind mount of `/mnt/openclaw/logs/runtime`, so the CLI still sees a trusted real directory while the actual files live on the data volume.
+- `systemd` stdout/stderr should also append to `/mnt/openclaw/logs/openclaw-service.stdout.log` and `/mnt/openclaw/logs/openclaw-service.stderr.log`.
+- Verified on `2026-03-24`: the gateway process reported its rolling log file as `/tmp/openclaw/openclaw-2026-03-24.log`, and `/tmp/openclaw` was bind-mounted from the data volume.

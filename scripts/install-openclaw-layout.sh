@@ -13,6 +13,12 @@ set -euo pipefail
 export OPENCLAW_STATE_DIR=/mnt/openclaw/state
 export OPENCLAW_AUTH_DIR=/mnt/openclaw/auth
 export OPENCLAW_CONFIG_PATH=/mnt/openclaw/config/config.json5
+mkdir -p /mnt/openclaw/logs/runtime
+mkdir -p /tmp/openclaw
+chmod 0700 /mnt/openclaw/logs/runtime /tmp/openclaw
+if ! mountpoint -q /tmp/openclaw; then
+  mount --bind /mnt/openclaw/logs/runtime /tmp/openclaw
+fi
 exec /mnt/openclaw/bin/openclaw gateway run --allow-unconfigured
 EOS
 chmod 0755 /mnt/openclaw/bin/start-openclaw.sh
@@ -61,6 +67,8 @@ Environment=OPENCLAW_STATE_DIR=/mnt/openclaw/state
 Environment=OPENCLAW_AUTH_DIR=/mnt/openclaw/auth
 Environment=OPENCLAW_CONFIG_PATH=/mnt/openclaw/config/config.json5
 ExecStart=/bin/bash /mnt/openclaw/bin/start-openclaw.sh
+StandardOutput=append:/mnt/openclaw/logs/openclaw-service.stdout.log
+StandardError=append:/mnt/openclaw/logs/openclaw-service.stderr.log
 Restart=always
 RestartSec=5
 
